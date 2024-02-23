@@ -4,11 +4,18 @@ Module containing the FileStorage
 """
 import json
 from models.base_model import BaseModel
+from models.user import User
 
 
 class FileStorage:
     __file_path = "file.json"
     __objects = {}
+    # Add a class name to class mapping
+    __class_name_mapping = {
+        'User': User,
+        'BaseModel': BaseModel,
+        # Add other classes if needed
+    }
 
     def all(self):
         """Returns the dictionary __objects"""
@@ -35,7 +42,9 @@ class FileStorage:
                 for key in obj_dict:
                     class_name, obj_id = key.split('.')
                     obj_dict[key]['__class__'] = class_name
-                    obj_instance = eval(class_name)(**obj_dict[key])
+                    # Use the mapping to get the class
+                    obj_class = FileStorage.__class_name_mapping.get(class_name, BaseModel)
+                    obj_instance = obj_class(**obj_dict[key])
                     FileStorage.__objects[key] = obj_instance
         except FileNotFoundError:
             pass
