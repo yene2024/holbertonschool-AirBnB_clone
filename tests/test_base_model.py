@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+"""
+Testing base model file.
+"""
 from models.base_model import BaseModel
 
 my_model = BaseModel()
