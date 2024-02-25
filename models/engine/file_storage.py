@@ -43,7 +43,8 @@ class FileStorage:
                     class_name, obj_id = key.split('.')
                     obj_dict[key]['__class__'] = class_name
                     # Use the mapping to get the class
-                    obj_class = FileStorage.__class_name_mapping.get(class_name, BaseModel)
+                    obj_class = FileStorage.__class_name_mapping.get(
+                        class_name, BaseModel)
                     obj_instance = obj_class(**obj_dict[key])
                     FileStorage.__objects[key] = obj_instance
         except FileNotFoundError:
