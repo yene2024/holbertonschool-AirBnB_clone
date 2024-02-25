@@ -44,10 +44,13 @@ class BaseModel:
 
     def to_dict(self):
         """
-        Returns a dictionary containing all keys/values of __dict__ of the instance.
+        Returns a dictionary containing all
+        keys/values of __dict__ of the instance.
         Includes a key __class__ with the class name of the object.
-        created_at and updated_at are converted to string objects in ISO format using isoformat().
-        This method is the first piece of the serialization/deserialization process.
+        created_at and updated_at 
+        are converted to string objects in ISO format using isoformat().
+        This method is the first piece of the
+        serialization/deserialization process.
         """
         model_dict = self.__dict__.copy()
         model_dict['__class__'] = self.__class__.__name__
