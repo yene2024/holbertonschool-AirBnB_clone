@@ -40,3 +40,7 @@ class BaseModel:
         model_dict['created_at'] = self.created_at.isoformat()
         model_dict['updated_at'] = self.updated_at.isoformat()
         return model_dict
+
+
+if __name__ == '__main__':
+    my_model = BaseModel()
