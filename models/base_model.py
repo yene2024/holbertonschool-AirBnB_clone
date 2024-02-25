@@ -30,13 +30,25 @@ class BaseModel:
             storage.new(self)
 
     def __str__(self):
+        """
+        Returns a string representation of the object.
+        """
         return "[{}] ({}) {}".format(
             self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
+        """
+        Updates the public instance attribute updated_at with the current datetime.
+        """
         self.updated_at = datetime.now()
 
     def to_dict(self):
+        """
+        Returns a dictionary containing all keys/values of __dict__ of the instance.
+        Includes a key __class__ with the class name of the object.
+        created_at and updated_at are converted to string objects in ISO format using isoformat().
+        This method is the first piece of the serialization/deserialization process.
+        """
         model_dict = self.__dict__.copy()
         model_dict['__class__'] = self.__class__.__name__
         model_dict['created_at'] = self.created_at.isoformat()
