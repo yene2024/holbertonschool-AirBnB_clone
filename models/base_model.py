@@ -51,3 +51,4 @@ class BaseModel:
 
 if __name__ == '__main__':
     my_model = BaseModel()
+    my_model.save()
