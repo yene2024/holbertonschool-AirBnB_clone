@@ -34,10 +34,7 @@ class BaseModel:
             self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
-        """
-        Updates the public instance attribute updated_at
-        with the current datetime and saves the instance to the JSON file.
-        """
+        """Serializes __objects to the JSON file."""
         self.updated_at = datetime.now()
         storage.save()
 
@@ -51,4 +48,3 @@ class BaseModel:
 
 if __name__ == '__main__':
     my_model = BaseModel()
-    my_model.save()
