@@ -1,14 +1,28 @@
-import cmd
-import shlex
-from models.base_model import BaseModel
+#!/usr/bin/python3
 """Console module
 """
+import cmd
+import shlex
+from models import storage
+from models.base_model import BaseModel
+from models.user import User
+from models.amenity import Amenity
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
 
 
 class HBNBCommand(cmd.Cmd):
     """HBNBCommand class"""
     prompt = "(hbnb)"
-    classes = ["BaseModel"]
+    classes = ["BaseModel",
+               "User",
+               "Amenity",
+               "City",
+               "Place",
+               "Review",
+               "State"]
 
     def do_EOF(self, line):
         """ EOF command to exit the program
@@ -21,18 +35,102 @@ class HBNBCommand(cmd.Cmd):
         """
         return True
 
-    def create(self, args):
+    def do_create(self, args):
         """Creates a new instance of BaseModel, saves it (to the JSON file) and prints the id.
         """
         commands = shlex.split(args)
-        if commands == "":
+        if len(commands) == 0:
             print("** class name missing **")
-        elif commands not in self.classes:
+        elif commands[0] not in self.classes:
             print("** class doesn't exist **")
         else:
-            new_instance = BaseModel()
-            new_instance.save()
+            new_instance = eval(f"{commands[0]}()")
+
+            storage.save()
             print(new_instance.id)
+
+    def do_show(self, args):
+        """Prints the string representation of an instance based on the class name and id.
+        """
+        commands = shlex.split(args)
+        if len(commands) == 0:
+            print("** class name missing **")
+        elif commands[0] not in self.classes:
+            print("** class doesn't exist **")
+        elif len(commands) < 2:
+            print("** instance id missing **")
+        else:
+            objects = storage.all()
+            key = f"{commands[0]}.{commands[1]}"
+            if key in objects:
+                print(objects[key])
+            else:
+                print("** no instance found **")
+
+    def do_destroy(self, args):
+        """Deletes an instance based on the class name and id (save the change into the JSON file).
+        """
+        commands = shlex.split(args)
+        if len(commands) == 0:
+            print("** class name missing **")
+        elif commands[0] not in self.classes:
+            print("** class doesn't exist **")
+        elif len(commands) < 2:
+            print("** instance id missing **")
+        else:
+            objects = storage.all()
+            key = f"{commands[0]}.{commands[1]}"
+            if key in objects:
+                del objects[key]
+                storage.save()
+            else:
+                print("** no instance found **")
+
+    def do_all(self, args):
+        """Prints all string representation of all instances based or not on the class name.
+        """
+        commands = shlex.split(args)
+        objects = storage.all()
+
+        if len(commands) == 0:
+            for key, value in objects.items():
+                print(str(value))
+        elif commands[0] not in self.classes:
+            print("** class doesn't exist **")
+        else:
+            for key, value in objects.items():
+                if key.split(".")[0] == commands[0]:
+                    print(str(value))
+
+    def do_update(self, args):
+        """Updates an instance based on the class name and id by adding or updating attribute (save the change into the JSON file).
+        """
+        commands = shlex.split(args)
+        if len(commands) == 0:
+            print("** class name missing **")
+        elif commands[0] not in self.classes:
+            print("** class doesn't exist **")
+        elif len(commands) < 2:
+            print("** instance id missing **")
+        else:
+            objects = storage.all()
+            key = f"{commands[0]}.{commands[1]}"
+            if key not in objects:
+                print("** no instance found **")
+            elif len(commands) < 3:
+                print("** attribute name missing **")
+            elif len(commands) < 4:
+                print("** value missing **")
+            else:
+                obj = objects[key]
+                attr = commands[2]
+                value = commands[3]
+                try:
+                    value = eval(value)
+                except Exception:
+                    pass
+                setattr(obj, attr, value)
+                obj.save()
 
 
 if __name__ == '__main__':
