@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+"""
+Module containing the BaseModel classes
+"""
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
