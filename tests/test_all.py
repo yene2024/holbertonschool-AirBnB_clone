@@ -1,5 +1,6 @@
 import unittest
 
+
 def run_tests():
     loader = unittest.TestLoader()
     suite = loader.discover('tests', pattern='test_*.py')
@@ -8,6 +9,7 @@ def run_tests():
     result = runner.run(suite)
 
     return result
+
 
 if __name__ == '__main__':
     run_tests()
