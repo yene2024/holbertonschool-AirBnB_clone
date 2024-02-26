@@ -8,3 +8,5 @@ from models.user import User
 
 storage = FileStorage()
 storage.reload()
+my_model = BaseModel()
+my_model.save()
