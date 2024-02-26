@@ -16,13 +16,8 @@ from models.state import State
 class HBNBCommand(cmd.Cmd):
     """HBNBCommand class"""
     prompt = "(hbnb)"
-    classes = ["BaseModel",
-               "User",
-               "Amenity",
-               "City",
-               "Place",
-               "Review",
-               "State"]
+    classes = ["BaseModel", "User", "Amenity", "City",
+               "Place", "Review", "State"]
 
     def do_EOF(self, line):
         """ EOF command to exit the program
@@ -102,6 +97,21 @@ class HBNBCommand(cmd.Cmd):
                 if key.split(".")[0] == commands[0]:
                     print(str(value))
 
+    def default(self, args):
+        """Called on an input line when the command prefix is not recognized.
+        """
+        commands = args.split(".")
+        if len(commands) == 2:
+            if commands[0] in self.classes:
+                if commands[1] == "all()":
+                    self.do_all(commands[0])
+                else:
+                    print("** Unknown syntax:", args)
+            else:
+                print("** class doesn't exist **")
+        else:
+            print("** Unknown syntax:", args)
+
     def do_update(self, args):
         """Updates an instance based on the class name and id by adding or updating attribute (save the change into the JSON file).
         """
@@ -131,6 +141,17 @@ class HBNBCommand(cmd.Cmd):
                     pass
                 setattr(obj, attr, value)
                 obj.save()
+
+    def count(self, args):
+        """Retrieve the number of instances of a class.
+        """
+        commands = shlex.split(args)
+        objects = storage.all()
+        count = 0
+        for key, value in objects.items():
+            if key.split(".")[0] == commands[0]:
+                count += 1
+        print(count)
 
 
 if __name__ == '__main__':
