@@ -1,51 +1,57 @@
 #!/usr/bin/python3
 """
-Module containing the FileStorage
+Module for the FileStorage class
 """
+
 import json
 from models.base_model import BaseModel
-from models.user import User
-
+from datetime import datetime
 
 class FileStorage:
+    """
+    Serializes instances to a JSON file and deserializes JSON file to instances
+    """
     __file_path = "file.json"
     __objects = {}
-    # Add a class name to class mapping
-    __class_name_mapping = {
-        'User': User,
-        'BaseModel': BaseModel,
-        # Add other classes if needed
-    }
 
     def all(self):
-        """Returns the dictionary __objects"""
+        """
+        Returns the dictionary __objects
+        """
         return FileStorage.__objects
 
     def new(self, obj):
-        """Sets in __objects the obj with key <obj class name>.id"""
-        key = obj.__class__.__name__ + "." + obj.id
+        """
+        Sets in __objects the obj with key <obj class name>.id
+        """
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
         FileStorage.__objects[key] = obj
 
     def save(self):
-        """Serializes __objects to the JSON file (path: __file_path)"""
-        obj_dict = {}
-        for key in FileStorage.__objects:
-            obj_dict[key] = FileStorage.__objects[key].to_dict()
-        with open(FileStorage.__file_path, 'w') as file:
-            json.dump(obj_dict, file)
+        """
+        Serializes __objects to the JSON file (path: __file_path)
+        """
+        save_dict = {}
+        for key, value in FileStorage.__objects.items():
+            save_dict[key] = value.to_dict()
+        with open(FileStorage.__file_path, 'w', encoding='utf-8') as file:
+            json.dump(save_dict, file)
 
     def reload(self):
-        """Deserializes the JSON file to __objects"""
+        """
+        Deserializes the JSON file to __objects
+        """
         try:
-            with open(FileStorage.__file_path, 'r') as file:
-                obj_dict = json.load(file)
-                for key in obj_dict:
-                    class_name, obj_id = key.split('.')
-                    obj_dict[key]['__class__'] = class_name
-                    # Use the mapping to get the class
-                    obj_class = FileStorage.__class_name_mapping.get(
-                        class_name, BaseModel)
-                    obj_instance = obj_class(**obj_dict[key])
-                    FileStorage.__objects[key] = obj_instance
+            with open(FileStorage.__file_path, 'r', encoding='utf-8') as file:
+                json_dict = json.load(file)
+            for key, value in json_dict.items():
+                class_name, obj_id = key.split('.')
+                obj_dict = value
+                obj_dict['created_at'] = datetime.strptime(
+                    obj_dict['created_at'], "%Y-%m-%dT%H:%M:%S.%f")
+                obj_dict['updated_at'] = datetime.strptime(
+                    obj_dict['updated_at'], "%Y-%m-%dT%H:%M:%S.%f")
+                instance = eval(class_name)(**obj_dict)
+                FileStorage.__objects[key] = instance
         except FileNotFoundError:
             pass
