@@ -3,6 +3,8 @@
 Module containing the BaseModel class
 """
 import uuid
+import json
+import os
 from datetime import datetime
 from models import storage
 
@@ -34,8 +36,20 @@ class BaseModel:
             self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
-        self.updated_at = datetime.now()
-        storage.save()
+     from models import storage  # Import locally within a method
+     obj_dict = {key: obj.to_dict() for key, obj in storage.all().items()}
+     with open(storage._FileStorage__file_path, 'w') as file:
+        json.dump(obj_dict, file)
+
+    def reload(self):
+     from models import storage  # Import locally within a method
+     if os.path.exists(storage._FileStorage__file_path):
+        with open(storage._FileStorage__file_path, 'r') as file:
+            data = json.load(file)
+            for key, value in data.items():
+                class_name, obj_id = key.split('.')
+                obj = globals()[class_name](**value)
+                storage._FileStorage__objects[key] = obj
 
     def to_dict(self):
         model_dict = self.__dict__.copy()
