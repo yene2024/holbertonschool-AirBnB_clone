@@ -10,8 +10,9 @@ from datetime import datetime
 
 
 class FileStorage:
-    __file_path = "file.json"
-    __objects = {}
+    def __init__(self, file_path="file.json"):
+        self.__file_path = file_path
+        self.__objects = {}
 
     def all(self):
         """Returns the dictionary of stored objects."""
@@ -24,7 +25,7 @@ class FileStorage:
         Args:
             obj: Instance of a class to be stored.
         """
-        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        key = obj.id
         self.__objects[key] = obj
 
     def save(self):
@@ -41,11 +42,10 @@ class FileStorage:
 
         Only reloads if the file exists.
         """
+    def reload(self):
         if os.path.exists(self.__file_path):
             with open(self.__file_path, 'r') as file:
                 data = json.load(file)
                 for key, value in data.items():
-                    class_name, obj_id = key.split('.')
-                    # Dynamically create an instance of the class using globals()
-                    obj = globals()[class_name](**value)
+                    obj = globals()[value['__class__']](**value)
                     self.__objects[key] = obj
