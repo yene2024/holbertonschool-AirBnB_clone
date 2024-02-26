@@ -3,6 +3,7 @@
 Testing base model file.
 """
 from models.base_model import BaseModel
+from models import storage 
 
 my_model = BaseModel()
 my_model.name = "My First Model"
