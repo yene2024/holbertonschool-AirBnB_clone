@@ -4,55 +4,48 @@ Module for the FileStorage class
 """
 
 import json
+import os
 from models.base_model import BaseModel
 from datetime import datetime
 
 
 class FileStorage:
-    """
-    Serializes instances to a JSON file and deserializes JSON file to instances
-    """
     __file_path = "file.json"
     __objects = {}
 
     def all(self):
-        """
-        Returns the dictionary __objects
-        """
-        return FileStorage.__objects
+        """Returns the dictionary of stored objects."""
+        return self.__objects
 
     def new(self, obj):
         """
-        Sets in __objects the obj with key <obj class name>.id
+        Adds a new object to the __objects dictionary.
+
+        Args:
+            obj: Instance of a class to be stored.
         """
         key = "{}.{}".format(obj.__class__.__name__, obj.id)
-        FileStorage.__objects[key] = obj
+        self.__objects[key] = obj
 
     def save(self):
         """
-        Serializes __objects to the JSON file (path: __file_path)
+        Serializes and saves the __objects dictionary to the JSON file.
         """
-        save_dict = {}
-        for key, value in FileStorage.__objects.items():
-            save_dict[key] = value.to_dict()
-        with open(FileStorage.__file_path, 'w', encoding='utf-8') as file:
-            json.dump(save_dict, file)
+        obj_dict = {key: obj.to_dict() for key, obj in self.__objects.items()}
+        with open(self.__file_path, 'w') as file:
+            json.dump(obj_dict, file)
 
     def reload(self):
         """
-        Deserializes the JSON file to __objects
+        Deserializes and reloads objects from the JSON file into __objects.
+
+        Only reloads if the file exists.
         """
-        try:
-            with open(FileStorage.__file_path, 'r', encoding='utf-8') as file:
-                json_dict = json.load(file)
-            for key, value in json_dict.items():
-                class_name, obj_id = key.split('.')
-                obj_dict = value
-                obj_dict['created_at'] = datetime.strptime(
-                    obj_dict['created_at'], "%Y-%m-%dT%H:%M:%S.%f")
-                obj_dict['updated_at'] = datetime.strptime(
-                    obj_dict['updated_at'], "%Y-%m-%dT%H:%M:%S.%f")
-                instance = eval(class_name)(**obj_dict)
-                FileStorage.__objects[key] = instance
-        except FileNotFoundError:
-            pass
+        if os.path.exists(self.__file_path):
+            with open(self.__file_path, 'r') as file:
+                data = json.load(file)
+                for key, value in data.items():
+                    class_name, obj_id = key.split('.')
+                    # Dynamically create an instance of the class using globals()
+                    obj = globals()[class_name](**value)
+                    self.__objects[key] = obj
