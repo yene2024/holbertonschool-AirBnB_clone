@@ -31,14 +31,18 @@ class BaseModel:
             models.storage.new(self)
 
     def __str__(self):
+        """Returns a string representation of the instance.
+        """
         return "[{}] ({}) {}".format(
             self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
+        """Updates the public instance attribute updated_at"""
         self.updated_at = datetime.now()
         models.storage.save()
 
     def to_dict(self):
+        """Returns a dictionary containing all keys/values of __dict__"""
         model_dict = self.__dict__.copy()
         model_dict['__class__'] = self.__class__.__name__
         model_dict['created_at'] = self.created_at.isoformat()
