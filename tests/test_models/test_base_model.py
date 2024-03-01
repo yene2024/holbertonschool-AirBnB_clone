@@ -122,7 +122,6 @@ class TestBaseModel(unittest.TestCase):
                           "updated_at",
                           "name",
                           "my_number",
-                          "is_new_instance",
                           "__class__"]
         self.assertCountEqual(d.keys(), expected_attrs)
         self.assertEqual(d['__class__'], 'BaseModel')
