@@ -25,6 +25,10 @@ class HBNBCommand(cmd.Cmd):
         print()
         return True
 
+    def emptyline(self):
+        """Do nothing on empty input line"""
+        pass
+
     def do_quit(self, line):
         """Quit command to exit the program
         """
@@ -131,6 +135,8 @@ class HBNBCommand(cmd.Cmd):
         else:
             objects = storage.all()
             key = f"{commands[0]}.{commands[1]}"
+            print(f"Key: {key}")  # Debugging line
+            print(f"Objects: {storage.all()}")  # Debugging line
             if key not in objects:
                 print("** no instance found **")
             elif len(commands) < 3:
