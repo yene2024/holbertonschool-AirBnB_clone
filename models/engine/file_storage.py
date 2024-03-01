@@ -8,6 +8,11 @@ import json
 import os
 from models.base_model import BaseModel
 from models.user import User
+from models.state import State
+from models.place import Place
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
 class FileStorage:
@@ -52,14 +57,12 @@ class FileStorage:
         deserializes the JSON file to __objects, if the JSON
         file exists, otherwise nothing happens)
         """
-        if os.path.isfile(FileStorage.__file_path):
-            with open(FileStorage.__file_path, 'r') as f:
-                try:
-                    obj_dict = json.load(f)
-                    for key, value in obj_dict.items():
-                        class_name = key.split(".")
-                        class_inst = eval(class_name)
-                        instance = class_inst(**value)
-                        FileStorage.__objects[key] = instance
-                except Exception:
-                    pass
+        try:
+            with open(FileStorage.__file_path) as f:
+                object_dict = json.load(f)
+                for obj in object_dict.values():
+                    class_name = obj['__class__']
+                    del obj['__class__']
+                    self.new(eval(class_name)(**obj))
+        except FileNotFoundError:
+            pass
