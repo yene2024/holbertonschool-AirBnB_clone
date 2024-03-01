@@ -1,89 +1,73 @@
 #!/usr/bin/python3
-"""unittest of the User Class"""
+"""Module test_user"""
 import unittest
 from models.user import User
+from models.base_model import BaseModel
+from models import storage
 
 
 class TestUser(unittest.TestCase):
-    """
-    This class contains unit tests for the User class.
-    """
+    """Testing User functionality"""
 
-    def test_user_attributes(self):
-        """
-        Test case to verify the default attribute values of a User instance.
-        """
-        user = User()
-        self.assertEqual(user.email, "")
-        self.assertEqual(user.password, "")
-        self.assertEqual(user.first_name, "")
-        self.assertEqual(user.last_name, "")
+    def setUp(self):
+        """Set up"""
+        self.user1 = User()
+        self.user2 = User()
+        self.user2.email = "user@example.com"
+        self.user2.password = "password"
+        self.user2.first_name = "Betty"
+        self.user2.last_name = "Holberton"
+        self.user2.save()
 
-    def test_user_init(self):
-        """
-        Test case to verify the initialization of a User instance with specific attribute values.
-        """
-        user = User(email="test@example.com", password="password",
-                    first_name="John", last_name="Doe")
-        self.assertEqual(user.email, "test@example.com")
-        self.assertEqual(user.password, "password")
-        self.assertEqual(user.first_name, "John")
-        self.assertEqual(user.last_name, "Doe")
+    def test_attributes(self):
+        """Testing User attributes"""
+        self.assertTrue(hasattr(self.user1, "email"))
+        self.assertTrue(hasattr(self.user1, "password"))
+        self.assertTrue(hasattr(self.user1, "first_name"))
+        self.assertTrue(hasattr(self.user1, "last_name"))
 
-    def test_user_email(self):
-        """
-        Test case to verify the email attribute of a User instance.
-        """
-        user = User()
-        user.email = "test@example.com"
-        self.assertEqual(user.email, "test@example.com")
+    def test_id(self):
+        """Testing User id"""
+        self.assertNotEqual(self.user1.id, self.user2.id)
 
-    def test_user_password(self):
-        """
-        Test case to verify the password attribute of a User instance.
-        """
-        user = User()
-        user.password = "password"
-        self.assertEqual(user.password, "password")
+    def test_attribute_default(self):
+        """Test attribute default"""
+        self.assertEqual(self.user1.email, "")
+        self.assertEqual(self.user1.password, "")
+        self.assertEqual(self.user1.first_name, "")
+        self.assertEqual(self.user1.last_name, "")
 
-    def test_user_first_name(self):
-        """
-        Test case to verify the first_name attribute of a User instance.
-        """
-        user = User()
-        user.first_name = "John"
-        self.assertEqual(user.first_name, "John")
+    def test_created_at(self):
+        """Testing created_at"""
+        self.assertNotEqual(self.user1.created_at, self.user2.created_at)
 
-    def test_user_last_name(self):
-        """
-        Test case to verify the last_name attribute of a User instance.
-        """
-        user = User()
-        user.last_name = "Doe"
-        self.assertEqual(user.last_name, "Doe")
+    def test_str(self):
+        """Testing User __str__"""
+        expected = "[User] ({}) {}".format(self.user1.id, self.user1.__dict__)
+        self.assertEqual(expected, str(self.user1))
 
-    def test_user_str(self):
-        """
-        Test case to verify the __str__ method of a User instance.
-        """
-        user = User(email="test@example.com", password="password",
-                    first_name="John", last_name="Doe")
-        expected_str = "[User] ({}) {}".format(user.id, user.__dict__)
-        self.assertEqual(str(user), expected_str)
+    def test_save(self):
+        """Testing save"""
+        created = self.user1.created_at
+        updated = self.user1.updated_at
+        self.user1.save()
+        self.assertNotEqual(updated, self.user1.updated_at)
+        self.assertEqual(created, self.user1.created_at)
 
-    def test_user_to_dict(self):
-        """
-        Test case to verify the to_dict method of a User instance.
-        """
-        user = User(email="test@example.com", password="password",
-                    first_name="John", last_name="Doe")
-        user_dict = user.to_dict()
-        self.assertEqual(user_dict["__class__"], "User")
-        self.assertEqual(user_dict["email"], "test@example.com")
-        self.assertEqual(user_dict["password"], "password")
-        self.assertEqual(user_dict["first_name"], "John")
-        self.assertEqual(user_dict["last_name"], "Doe")
+    def test_to_dict(self):
+        """Testing to_dict"""
+        expected = {
+            "id": self.user2.id,
+            "__class__": type(self.user2).__name__,
+            "email": "user@example.com",
+            "password": "password",
+            "first_name": "Betty",
+            "last_name": "Holberton",
+            "created_at": self.user2.created_at.isoformat(),
+            "updated_at": self.user2.updated_at.isoformat()
+        }
+        self.assertDictEqual(expected, self.user2.to_dict())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
