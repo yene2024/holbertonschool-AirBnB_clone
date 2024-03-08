@@ -122,3 +122,5 @@ EOF  help  quit
 $
 
 All tests should also pass in non-interactive mode: $ echo "python3 -m unittest discover tests" | bash
+
+![image](https://github.com/yene2024/holbertonschool-AirBnB_clone/assets/142119219/64ec91a9-6c13-46aa-bcb3-044eda5be7e3)
