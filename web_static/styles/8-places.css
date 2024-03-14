@@ -59,17 +59,17 @@ article:last-child {
     font-size: medium;
 }
 .max_guest {
-    background-image: url(../styles/images/icon_group.png);
+    background-image: url(../images/icon_group.png);
     margin-top: 5px;
     margin-bottom: 0;
 }
 .number_rooms {
-    background-image: url(../styles/images/icon_bed.png);
+    background-image: url(../images/icon_bed.png); 
     margin-top: 5px;
     margin-bottom: 0;
 }
 .number_bathrooms {
-    background-image: url(../styles/images/icon_bath.png);
+    background-image: url(../images/icon_bath.png);
     margin-top: 5px;
     margin-bottom: 0;
 }
